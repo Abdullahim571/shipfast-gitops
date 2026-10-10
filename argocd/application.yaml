@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: shipfast
+  # Application resources must live in the namespace Argo CD is installed in.
+  namespace: argocd
+  # Deletes the app's Kubernetes resources when this Application is deleted.
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Abdullahim571/shipfast-gitops.git
+    targetRevision: main
+    path: manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shipfast
+  syncPolicy:
+    automated:
+      # Delete resources from the cluster when their manifest is removed from Git.
+      prune: true
+      # Revert manual changes made in the cluster back to what Git declares.
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
